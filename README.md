@@ -149,3 +149,60 @@ I can implement the immediate security fixes (branch and PR) and add the basic t
 - **C** — Provide a detailed patch / step-by-step guide only
 
 Reply with your choice and I'll begin the requested work.
+
+---
+
+### Recent changes (applied) ✅
+
+I implemented a small, focused set of fixes to make the API more RESTful, fix a many-to-many mapping, and add minimal endpoints required for typical CRUD flows. Below is a concise summary you can copy into release notes or a PR description.
+
+- **Many-to-many mapping fix**
+  - Fixed mapping mismatch between `Workspace` and `Users`:
+    - `Workspace` now has `@ManyToMany(mappedBy = "workspaces")`.
+    - `Users.workspaces` is annotated with `@JsonIgnore` to prevent recursion during JSON serialization.
+
+- **DTO and response changes**
+  - `WorkSpaceResponse` now exposes `List<UserResponse> users` instead of a single user.
+  - `UserResponse` no longer includes `password` (sensitive data removed).
+
+- **Workspace endpoints** (`/workspaces`)
+  - `GET /workspaces` — list workspaces
+  - `GET /workspaces/{workspaceId}` — get workspace
+  - `POST /workspaces` — create (201 Created)
+  - `PUT /workspaces/{workspaceId}` — update (200 OK)
+  - `DELETE /workspaces/{workspaceId}` — delete (204 No Content)
+  - `POST /workspaces/{workspaceId}/users?username=...` — add user to workspace (200 OK)
+  - `DELETE /workspaces/{workspaceId}/users/{userId}` — remove user (204 No Content)
+
+- **Task endpoints**
+  - `GET /workspaces/{workspaceId}/tasks` — list
+  - `POST /workspaces/{workspaceId}/tasks` — create (201)
+  - `GET /tasks/{taskId}` — get
+  - `PUT /tasks/{taskId}` — update (200)
+  - `DELETE /tasks/{taskId}` — delete (204)
+  - `PATCH /tasks/{taskId}/status` — partial update status (200)
+
+- **Comments endpoints**
+  - `GET /tasks/{taskId}/comments` — list
+  - `POST /tasks/{taskId}/comments` — create (201)
+  - `GET /comments/{commentId}` — get
+  - `PUT /comments/{commentId}` — update (200)
+  - `DELETE /comments/{commentId}` — delete (204)
+
+- **Users**
+  - Pagination via `GET /users?page=0&size=5&sort=id,asc` supported (uses `Pageable`).
+  - `DELETE /users/{id}` now returns `204 No Content`.
+
+- **Auth**
+  - `POST /auth/register` — create user (existing)
+  - `POST /auth/login` — added a basic login endpoint; currently returns a placeholder token (UUID) after verifying credentials with BCrypt.
+
+- **Misc & recommended follow-ups**
+  - Add `Location` headers to POST responses (e.g., `Location: /workspaces/{id}`).
+  - Replace placeholder login token with a proper JWT-based auth flow if you plan to secure endpoints.
+  - Add unit and integration tests for new endpoints and many-to-many behavior.
+
+---
+
+If you'd like, I can open a PR with the commits and this README content as the PR description, and then add tests for the most-critical endpoints.
+

@@ -12,6 +12,10 @@ spring:
     show-sql: true
     hibernate:
       ddl-auto: update
+  security:
+    user:
+      name: "user"
+      password: "$2a$12$5ZdZG/CicwB3XOO2jznu.ODrann63USsFjYXy8xfd0R0GMjT3HIdC"
 
 management:
   endpoints:

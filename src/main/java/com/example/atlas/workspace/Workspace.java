@@ -25,14 +25,13 @@ public class Workspace {
     @Column(nullable = false)
     private String name;
 
-    @JsonFormat(pattern = "dd-MM-yyyy HH:mm:ss")
     @CreationTimestamp
+    @JsonFormat(pattern = "dd-MM-yyyy HH:mm:ss")
     @Column(nullable = false)
     private LocalDateTime createdAt;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
-    private Users users;
+    @ManyToMany(mappedBy = "workspaces")
+    private List<Users> users = new ArrayList<>();
 
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "workspace", orphanRemoval = true)

@@ -34,17 +34,22 @@ public class Users {
 
     @CreationTimestamp
     @JsonFormat(pattern = "dd-MM-yyyy HH:mm:ss")
-    @Column(updatable = false,nullable = false)
+    @Column(updatable = false, nullable = false)
     private LocalDateTime createdAt;
 
 
-    @OneToMany(mappedBy = "users",orphanRemoval = true,cascade = CascadeType.ALL)
+    @ManyToMany
+    @JoinTable(
+            name = "user_workspace",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "workspace_id")
+    )
     @JsonIgnore
-    private List<Workspace> workspaces= new ArrayList<>();
+    private List<Workspace> workspaces = new ArrayList<>();
 
-    @OneToMany(mappedBy = "users",orphanRemoval = true,cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "users", orphanRemoval = true, cascade = CascadeType.ALL)
     @JsonIgnore
-    private List<Comments> comments= new ArrayList<>();
+    private List<Comments> comments = new ArrayList<>();
 
 
 }

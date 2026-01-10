@@ -43,7 +43,24 @@ public class CommentsService {
         return commentToDto(comments);
     }
 
-    private CommentsResponse commentToDto(Comments comments) {
+    public CommentsResponse getCommentById(Long id){
+        Comments comments = commentsRepo.findById(id).orElseThrow(() -> new NotFoundException("Comment not found: " + id));
+        return commentToDto(comments);
+    }
+
+    public CommentsResponse updateComment(Long id, CommentsRequest request){
+        Comments comments = commentsRepo.findById(id).orElseThrow(() -> new NotFoundException("Comment not found: " + id));
+        comments.setContent(request.getContent());
+        commentsRepo.save(comments);
+        return commentToDto(comments);
+    }
+
+    public void deleteComment(Long id){
+        Comments comments = commentsRepo.findById(id).orElseThrow(() -> new NotFoundException("Comment not found: " + id));
+        commentsRepo.delete(comments);
+    }
+
+    public CommentsResponse commentToDto(Comments comments) {
         return new CommentsResponse(
                 comments.getId(), comments.getContent(), comments.getCreatedAt(),
                 comments.getUsers().getId(), comments.getTask().getId()

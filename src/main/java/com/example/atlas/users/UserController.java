@@ -23,18 +23,13 @@ public class UserController {
 
 
     @GetMapping()
-    public ResponseEntity<List<UserResponse>> getUsers() {
-        return ResponseEntity.ok(service.getUsers());
-    }
-
-    @GetMapping("/page")
     public ResponseEntity<List<UserResponse>> getUsers(@PageableDefault(size = 5, sort = "id", direction = Sort.Direction.ASC) Pageable pageable) {
         return ResponseEntity.ok(service.getByPage(pageable));
     }
 
 
     @GetMapping("/{id}")
-    public ResponseEntity<UserResponse> getUser(@PathVariable Long id) throws Exception {
+    public ResponseEntity<UserResponse> getUser(@PathVariable Long id) {
         return ResponseEntity.ok(service.getUser(id));
     }
 
@@ -44,13 +39,13 @@ public class UserController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<UserResponse> deleteUser(@PathVariable long id) {
-        return new ResponseEntity<>(service.deleteUser(id), HttpStatus.OK);
+    public ResponseEntity<?> deleteUser(@PathVariable long id) {
+        service.deleteUser(id);
+        return ResponseEntity.noContent().build();
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<UserResponse> updateUser(@PathVariable long id, @Valid @RequestBody UserRequest userRequest) {
-        return new ResponseEntity<UserResponse>(service.updateUser(id, userRequest), HttpStatus.ACCEPTED);
+        return new ResponseEntity<>(service.updateUser(id, userRequest), HttpStatus.ACCEPTED);
     }
-
 }
