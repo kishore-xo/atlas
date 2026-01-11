@@ -37,6 +37,8 @@ public class Users {
     @Column(updatable = false, nullable = false)
     private LocalDateTime createdAt;
 
+    @Enumerated(EnumType.STRING)
+    private Role role;
 
     @ManyToMany
     @JoinTable(

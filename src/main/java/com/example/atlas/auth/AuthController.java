@@ -1,6 +1,7 @@
 package com.example.atlas.auth;
 
 import com.example.atlas.auth.dto.AuthRequest;
+import com.example.atlas.auth.dto.AuthResponse;
 import com.example.atlas.users.dto.UserRequest;
 import com.example.atlas.users.dto.UserResponse;
 
@@ -23,7 +24,7 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public String login(@RequestBody AuthRequest authRequest){
+    public AuthResponse login(@RequestBody AuthRequest authRequest){
         return authService.login(authRequest);
     }
 

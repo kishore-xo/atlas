@@ -6,6 +6,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -19,10 +20,10 @@ public class TaskController {
     @RequestMapping(path = "workspaces/{workspaceId}/tasks",method = RequestMethod.GET)
     public ResponseEntity<List<TaskResponse>> getTasks(@PathVariable Long workspaceId){
         return new ResponseEntity<>(taskService.getTasks(workspaceId), HttpStatus.OK);
-
     }
 
 
+    @PreAuthorize("hasRole('ADMIN')")
     @RequestMapping(path = "workspaces/{workspaceId}/tasks",method = RequestMethod.POST)
     public ResponseEntity<TaskResponse> createTask(@PathVariable Long workspaceId, @Valid @RequestBody TaskRequest taskRequest) {
         return new ResponseEntity<>(taskService.createTask(workspaceId,taskRequest),HttpStatus.CREATED);
@@ -33,17 +34,20 @@ public class TaskController {
         return new ResponseEntity<>(taskService.getTask(id),HttpStatus.OK);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/tasks/{taskId}")
     public ResponseEntity<TaskResponse> updateTask(@PathVariable Long taskId, @RequestBody TaskRequest request){
         return new ResponseEntity<>(taskService.updateTask(taskId, request), HttpStatus.OK);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/tasks/{taskId}")
     public ResponseEntity<Void> deleteTask(@PathVariable Long taskId){
         taskService.deleteTask(taskId);
         return ResponseEntity.noContent().build();
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PatchMapping("/tasks/{taskId}/status")
     public ResponseEntity<TaskResponse> updateTaskStatus(@PathVariable Long taskId, @RequestBody TaskRequest request){
         return new ResponseEntity<>(taskService.updateStatus(taskId, request.getStatus()), HttpStatus.OK);

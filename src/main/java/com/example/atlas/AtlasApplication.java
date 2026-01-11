@@ -2,12 +2,14 @@ package com.example.atlas;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 
 @SpringBootApplication
+@EnableMethodSecurity
 public class AtlasApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(AtlasApplication.class, args);
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(AtlasApplication.class, args);
+    }
 
 }

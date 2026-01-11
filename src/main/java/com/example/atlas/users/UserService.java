@@ -36,6 +36,7 @@ public class UserService {
         Users users = new Users();
         users.setName(userRequest.getName());
         users.setEmail(userRequest.getEmail());
+        users.setRole(Role.USER);
         users.setPassword(encoder.encode(userRequest.getPassword()));
 
         repo.save(users);
@@ -57,6 +58,13 @@ public class UserService {
     }
 
     public UserResponse userToResponse(Users us) {
-        return new UserResponse(us.getId(), us.getName(), us.getEmail(), us.getCreatedAt());
+        return new UserResponse(us.getId(), us.getName(), us.getEmail(),us.getRole(), us.getCreatedAt());
+    }
+
+    public UserResponse updateRole(long userId) {
+        Users user =repo.findById(userId).orElseThrow(() -> new NotFoundException("User not found: " + userId));
+        user.setRole(Role.ADMIN);
+        repo.save(user);
+        return userToResponse(user);
     }
 }

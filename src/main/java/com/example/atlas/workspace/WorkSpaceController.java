@@ -8,6 +8,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -19,6 +20,7 @@ public class WorkSpaceController {
 
     private final WorkSpaceService workSpaceService;
 
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping()
     public ResponseEntity<List<WorkSpaceResponse>> getWorkSpaces(@PageableDefault(size = 5,sort = "id",direction = Sort.Direction.ASC)Pageable pageable){
         return new ResponseEntity<>(workSpaceService.getWorkSpaces(pageable), HttpStatus.OK);
@@ -34,11 +36,13 @@ public class WorkSpaceController {
         return new ResponseEntity<>(workSpaceService.createWorkSpace(workSpaceRequest), HttpStatus.CREATED);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{workspaceId}")
     public ResponseEntity<WorkSpaceResponse> updateWorkSpace(@PathVariable Long workspaceId, @RequestBody WorkSpaceRequest request){
         return new ResponseEntity<>(workSpaceService.updateWorkSpace(workspaceId, request), HttpStatus.OK);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{workspaceId}")
     public ResponseEntity<Void> deleteWorkSpace(@PathVariable Long workspaceId){
         workSpaceService.deleteWorkSpace(workspaceId);
