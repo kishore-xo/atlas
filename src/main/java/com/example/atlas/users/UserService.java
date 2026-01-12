@@ -22,14 +22,15 @@ public class UserService {
 
     public List<UserResponse> getByPage(Pageable pageable) {
         Page<UserResponse> userResponses = repo.findAll(pageable)
-                .map(this::userToResponse);
+                .map(UserResponse::new);
         return userResponses.getContent();
 
     }
 
     public UserResponse getUser(Long id) {
-        Users us = repo.findById(id).orElseThrow(() -> new NotFoundException("User not found: " + id));
-        return userToResponse(us);
+        return repo.findById(id)
+                .map(UserResponse::new)
+                .orElseThrow();
     }
 
     public UserResponse createUser(UserRequest userRequest) {
@@ -40,7 +41,7 @@ public class UserService {
         users.setPassword(encoder.encode(userRequest.getPassword()));
 
         repo.save(users);
-        return userToResponse(users);
+        return new UserResponse(users);
     }
 
     public void deleteUser(Long id) {
@@ -54,17 +55,13 @@ public class UserService {
         users.setEmail(userRequest.getEmail());
         users.setPassword(encoder.encode(userRequest.getPassword()));
         repo.save(users);
-        return userToResponse(users);
-    }
-
-    public UserResponse userToResponse(Users us) {
-        return new UserResponse(us.getId(), us.getName(), us.getEmail(),us.getRole(), us.getCreatedAt());
+        return new UserResponse(users);
     }
 
     public UserResponse updateRole(long userId) {
-        Users user =repo.findById(userId).orElseThrow(() -> new NotFoundException("User not found: " + userId));
+        Users user = repo.findById(userId).orElseThrow(() -> new NotFoundException("User not found: " + userId));
         user.setRole(Role.ADMIN);
         repo.save(user);
-        return userToResponse(user);
+        return new UserResponse(user);
     }
 }

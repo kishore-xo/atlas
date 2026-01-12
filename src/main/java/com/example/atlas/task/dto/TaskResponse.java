@@ -1,6 +1,7 @@
 package com.example.atlas.task.dto;
 
 import com.example.atlas.comments.dto.CommentsResponse;
+import com.example.atlas.task.Task;
 import com.example.atlas.task.TaskStatus;
 
 import java.time.LocalDateTime;
@@ -10,5 +11,18 @@ public record TaskResponse
         (Long id, String title, String description,
          TaskStatus status, Long workId,
          List<CommentsResponse> commentsResponseList, LocalDateTime createdAt
-         )
-{}
+        ) {
+
+    public TaskResponse(Task task) {
+        this(
+                task.getId(),
+                task.getTitle(),
+                task.getDescription(),
+                task.getStatus(),
+                task.getWorkspace().getId(),
+                task.getComments().stream()
+                        .map(CommentsResponse::new).toList(),
+                task.getCreatedAt()
+        );
+    }
+}

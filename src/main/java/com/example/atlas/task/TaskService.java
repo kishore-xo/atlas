@@ -25,27 +25,8 @@ public class TaskService {
     private final CommentsService commentsService;
 
     public List<TaskResponse> getTasks(Long id) {
-        List<Task> tasks = taskRepo.findTasksByWorkspace_Id(id);
-
-        return tasks.stream()
-                .map(t -> {
-                    List<CommentsResponse> commentsResponses = t.getComments().stream()
-                            .map(c -> new CommentsResponse(
-                                    c.getId(), c.getContent(), c.getCreatedAt(), c.getUsers().getId(), c.getTask().getId()
-                            ))
-                            .toList();
-
-                    return new TaskResponse(
-                            t.getId(),
-                            t.getTitle(),
-                            t.getDescription(),
-                            t.getStatus(),
-                            t.getWorkspace().getId(),
-                            commentsResponses,
-                            t.getCreatedAt()
-                    );
-                })
-                .toList();
+        return taskRepo.findTasksByWorkspace_Id(id).stream()
+                .map(TaskResponse::new).toList();
     }
 
     public TaskResponse createTask(Long id, TaskRequest taskRequest) {
@@ -57,14 +38,14 @@ public class TaskService {
         task.setWorkspace(workspace);
 
         taskRepo.save(task);
-        return taskToResponse(task);
+        return new TaskResponse(task);
     }
 
 
     public TaskResponse getTask(Long id) {
 
         Task task = taskRepo.findById(id).orElseThrow(() -> new NotFoundException("Task not found with id: " + id));
-        return taskToResponse(task);
+        return new TaskResponse(task);
     }
 
     public TaskResponse updateTask(Long id, TaskRequest request) {
@@ -73,7 +54,7 @@ public class TaskService {
         task.setDescription(request.getDescription());
         task.setStatus(request.getStatus());
         taskRepo.save(task);
-        return taskToResponse(task);
+        return new TaskResponse(task);
     }
 
     public void deleteTask(Long id) {
@@ -85,17 +66,7 @@ public class TaskService {
         Task task = taskRepo.findById(id).orElseThrow(() -> new NotFoundException("Task not found with id: " + id));
         task.setStatus(status);
         taskRepo.save(task);
-        return taskToResponse(task);
+        return new TaskResponse(task);
     }
 
-    public TaskResponse taskToResponse(Task task) {
-        List<CommentsResponse> comments =commentsRepo.findCommentsByTask_Id(task.getId()).stream()
-                .map(commentsService::commentToDto).toList();
-
-        return new TaskResponse(
-                task.getId(), task.getTitle(), task.getDescription(),
-                task.getStatus(), task.getWorkspace().getId(),comments,
-                task.getCreatedAt()
-        );
-    }
 }
