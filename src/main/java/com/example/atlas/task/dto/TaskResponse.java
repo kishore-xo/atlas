@@ -1,7 +1,6 @@
 package com.example.atlas.task.dto;
 
 import com.example.atlas.comments.Comments;
-import com.example.atlas.comments.dto.CommentsResponse;
 import com.example.atlas.task.Task;
 import com.example.atlas.task.TaskStatus;
 import com.fasterxml.jackson.annotation.JsonFormat;
