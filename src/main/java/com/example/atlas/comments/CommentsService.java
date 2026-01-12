@@ -23,13 +23,10 @@ public class CommentsService {
     private final UserRepo userRepo;
 
     public List<CommentsResponse> getComment(Long id) {
-        List<Comments> commentsList = commentsRepo.findCommentsByTask_Id(id);
-        return commentsList.stream()
-                .map(list -> new CommentsResponse(
-                        list.getId(), list.getContent(),
-                        list.getCreatedAt(), list.getUsers().getId(),
-                        list.getTask().getId()
-                )).toList();
+        return commentsRepo.findCommentsByTask_Id(id).stream()
+                .map((CommentsResponse::new))
+                .toList();
+
     }
 
     public CommentsResponse createComment(Long id, @NonNull CommentsRequest commentsRequest) {
@@ -40,30 +37,24 @@ public class CommentsService {
         comments.setTask(task);
         comments.setUsers(users);
         commentsRepo.save(comments);
-        return commentToDto(comments);
+        return new CommentsResponse(comments);
     }
 
-    public CommentsResponse getCommentById(Long id){
+    public CommentsResponse getCommentById(Long id) {
         Comments comments = commentsRepo.findById(id).orElseThrow(() -> new NotFoundException("Comment not found: " + id));
-        return commentToDto(comments);
+        return new CommentsResponse(comments);
     }
 
-    public CommentsResponse updateComment(Long id, CommentsRequest request){
+    public CommentsResponse updateComment(Long id, CommentsRequest request) {
         Comments comments = commentsRepo.findById(id).orElseThrow(() -> new NotFoundException("Comment not found: " + id));
         comments.setContent(request.getContent());
         commentsRepo.save(comments);
-        return commentToDto(comments);
+        return new CommentsResponse(comments);
     }
 
-    public void deleteComment(Long id){
+    public void deleteComment(Long id) {
         Comments comments = commentsRepo.findById(id).orElseThrow(() -> new NotFoundException("Comment not found: " + id));
         commentsRepo.delete(comments);
     }
 
-    public CommentsResponse commentToDto(Comments comments) {
-        return new CommentsResponse(
-                comments.getId(), comments.getContent(), comments.getCreatedAt(),
-                comments.getUsers().getId(), comments.getTask().getId()
-        );
-    }
 }
