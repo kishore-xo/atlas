@@ -13,6 +13,6 @@ public class WorkSpaceRequest {
     private String name;
 
     @NotNull
-    private String userName;
+    private String username;
 
 }

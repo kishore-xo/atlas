@@ -80,13 +80,13 @@ These should be addressed immediately.
 
 1) Remove password from `UserResponse`:
 ```java
-// users/dto/UserResponse.java
+// usernames/dto/UserResponse.java
 public record UserResponse(Long id, String name, String email, @JsonFormat(pattern = "dd-MM-yyyy HH:mm:ss") LocalDateTime createdAt) {}
 ```
 
 2) Hide password in `Users` entity:
 ```java
-// users/Users.java
+// usernames/Users.java
 @JsonIgnore
 @Column(nullable = false)
 private String password;

@@ -1,16 +1,20 @@
 package com.example.atlas.task.dto;
 
+import com.example.atlas.comments.Comments;
 import com.example.atlas.comments.dto.CommentsResponse;
 import com.example.atlas.task.Task;
 import com.example.atlas.task.TaskStatus;
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
 public record TaskResponse
         (Long id, String title, String description,
-         TaskStatus status, Long workId,
-         List<CommentsResponse> commentsResponseList, LocalDateTime createdAt
+         TaskStatus status, String workSpaceName,
+         @JsonFormat(pattern = "dd-MM-yyyy HH:mm:ss")
+         LocalDateTime createdAt,
+         List<String> comments
         ) {
 
     public TaskResponse(Task task) {
@@ -19,10 +23,11 @@ public record TaskResponse
                 task.getTitle(),
                 task.getDescription(),
                 task.getStatus(),
-                task.getWorkspace().getId(),
+                task.getWorkspace().getName(),
+                task.getCreatedAt(),
                 task.getComments().stream()
-                        .map(CommentsResponse::new).toList(),
-                task.getCreatedAt()
+                        .map(Comments::getContent).toList()
+
         );
     }
 }

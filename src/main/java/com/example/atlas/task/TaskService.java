@@ -1,14 +1,12 @@
 package com.example.atlas.task;
 
 
-import com.example.atlas.comments.CommentsRepo;
-import com.example.atlas.comments.CommentsService;
-import com.example.atlas.comments.dto.CommentsResponse;
 import com.example.atlas.task.dto.TaskRequest;
 import com.example.atlas.task.dto.TaskResponse;
 import com.example.atlas.workspace.WorkSpaceRepo;
 import com.example.atlas.workspace.Workspace;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.example.atlas.exception.NotFoundException;
@@ -21,11 +19,9 @@ public class TaskService {
 
     private final TaskRepo taskRepo;
     private final WorkSpaceRepo workSpaceRepo;
-    private final CommentsRepo commentsRepo;
-    private final CommentsService commentsService;
 
-    public List<TaskResponse> getTasks(Long id) {
-        return taskRepo.findTasksByWorkspace_Id(id).stream()
+    public List<TaskResponse> getTasks(Long id,Pageable pageable) {
+        return taskRepo.findTasksByWorkspace_Id(id, pageable).stream()
                 .map(TaskResponse::new).toList();
     }
 

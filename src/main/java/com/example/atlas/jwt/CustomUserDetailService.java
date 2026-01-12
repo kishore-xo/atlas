@@ -10,7 +10,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 
 @Component
-public class CustomUserDetailService implements UserDetailsService {
+public class CustomUserDetailService implements UserDetailsService  {
     private final UserRepo userRepo;
 
     public CustomUserDetailService(UserRepo userRepo) {
@@ -24,7 +24,7 @@ public class CustomUserDetailService implements UserDetailsService {
                         () -> new NotFoundException("User not found with email: " + email));
 
         return org.springframework.security.core.userdetails.User
-                .withUsername(users.getName())
+                .withUsername(users.getEmail())
                 .password(users.getPassword())
                 .authorities("ROLE_" + users.getRole())
                 .build();

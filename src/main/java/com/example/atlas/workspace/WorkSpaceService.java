@@ -1,13 +1,9 @@
 package com.example.atlas.workspace;
 
 
-import com.example.atlas.task.TaskService;
-import com.example.atlas.task.dto.TaskResponse;
 import com.example.atlas.exception.NotFoundException;
 import com.example.atlas.users.UserRepo;
-import com.example.atlas.users.UserService;
 import com.example.atlas.users.Users;
-import com.example.atlas.users.dto.UserResponse;
 import com.example.atlas.workspace.dto.WorkSpaceRequest;
 import com.example.atlas.workspace.dto.WorkSpaceResponse;
 import lombok.RequiredArgsConstructor;
@@ -25,23 +21,21 @@ public class WorkSpaceService {
 
     private final WorkSpaceRepo workSpaceRepo;
     private final UserRepo userRepo;
-    private final TaskService taskService;
-    private final UserService userService;
 
     public WorkSpaceResponse getWorkSpaceById(Long id) {
         Workspace workspace = workSpaceRepo.findById(id).orElseThrow(() -> new NotFoundException("WorkSpace not found: " + id));
-        return workToResponse(workspace);
+        return new WorkSpaceResponse(workspace);
     }
 
     public List<WorkSpaceResponse> getWorkSpaces(Pageable pageable) {
         Page<WorkSpaceResponse> workSpaceResponses =workSpaceRepo.findAll(pageable)
-                .map(this::workToResponse);
+                .map(WorkSpaceResponse::new);
         return workSpaceResponses.getContent();
     }
 
     public WorkSpaceResponse createWorkSpace(WorkSpaceRequest workSpaceRequest) {
-        Users user = userRepo.findUsersByName(workSpaceRequest.getUserName()).orElseThrow(
-                () -> new NotFoundException("User not found: " + workSpaceRequest.getUserName())
+        Users user = userRepo.findUsersByName(workSpaceRequest.getUsername()).orElseThrow(
+                () -> new NotFoundException("User not found: " + workSpaceRequest.getUsername())
         );
         Workspace workspace = new Workspace();
         workspace.setName(workSpaceRequest.getName());
@@ -49,7 +43,7 @@ public class WorkSpaceService {
         saved.getUsers().add(user);
         user.getWorkspaces().add(saved);
         userRepo.save(user);
-        return workToResponse(saved);
+        return new WorkSpaceResponse(saved);
     }
 
     public WorkSpaceResponse addUserToWorkspace(Long workspaceId, String userName){
@@ -61,7 +55,7 @@ public class WorkSpaceService {
             userRepo.save(user);
             workSpaceRepo.save(workspace);
         }
-        return workToResponse(workspace);
+        return new WorkSpaceResponse(workspace);
     }
 
     public void removeUserFromWorkspace(Long workspaceId, Long userId){
@@ -78,7 +72,7 @@ public class WorkSpaceService {
         Workspace workspace = workSpaceRepo.findById(workspaceId).orElseThrow(() -> new NotFoundException("Workspace not found: " + workspaceId));
         workspace.setName(request.getName());
         workSpaceRepo.save(workspace);
-        return workToResponse(workspace);
+        return new WorkSpaceResponse(workspace);
     }
 
     public void deleteWorkSpace(Long workspaceId){
@@ -90,14 +84,5 @@ public class WorkSpaceService {
     }
 
 
-    private WorkSpaceResponse workToResponse(Workspace workspace){
-        List<TaskResponse> taskResponses = workspace.getTasks().stream()
-                .map(taskService::taskToResponse).toList();
 
-        List<UserResponse> userResponses = workspace.getUsers().stream()
-                .map(userService::userToResponse)
-                .toList();
-
-        return new WorkSpaceResponse(workspace.getId(), workspace.getName(), userResponses,workspace.getCreatedAt(),taskResponses);
-    }
 }

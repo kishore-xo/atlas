@@ -13,6 +13,4 @@ import lombok.NonNull;
 public class CommentsRequest {
     @NonNull
     private String content;
-
-    private String username;
 }
