@@ -5,6 +5,7 @@ import com.example.atlas.auth.dto.AuthResponse;
 import com.example.atlas.users.dto.UserRequest;
 import com.example.atlas.users.dto.UserResponse;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -19,12 +20,12 @@ public class AuthController {
     private final AuthService authService;
 
     @PostMapping("/register")
-    public UserResponse register(@RequestBody UserRequest userRequest) {
+    public UserResponse register(@Valid @RequestBody UserRequest userRequest) {
         return authService.register(userRequest);
     }
 
     @PostMapping("/login")
-    public AuthResponse login(@RequestBody AuthRequest authRequest){
+    public AuthResponse login(@RequestBody AuthRequest authRequest) {
         return authService.login(authRequest);
     }
 

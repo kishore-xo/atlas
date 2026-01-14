@@ -43,12 +43,8 @@ public class JwtUtil {
                 .getPayload();
     }
 
-    public boolean isValidateToken(String token) {
-        return isTokenExpired(token);
 
-    }
-
-    private boolean isTokenExpired(String token) {
+    public boolean isTokenExpired(String token) {
         return extractClaims(token).getExpiration().before(new Date());
     }
 

@@ -4,6 +4,9 @@ import com.example.atlas.task.dto.TaskRequest;
 import com.example.atlas.task.dto.TaskResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -18,8 +21,8 @@ public class TaskController {
     private final TaskService taskService;
 
     @RequestMapping(path = "workspaces/{workspaceId}/tasks",method = RequestMethod.GET)
-    public ResponseEntity<List<TaskResponse>> getTasks(@PathVariable Long workspaceId){
-        return new ResponseEntity<>(taskService.getTasks(workspaceId), HttpStatus.OK);
+    public ResponseEntity<List<TaskResponse>> getTasks(@PathVariable Long workspaceId, @PageableDefault(size = 5,direction = Sort.Direction.ASC,sort = "id")Pageable pageable){
+        return new ResponseEntity<>(taskService.getTasks(workspaceId,pageable), HttpStatus.OK);
     }
 
 
@@ -49,8 +52,8 @@ public class TaskController {
 
     @PreAuthorize("hasRole('ADMIN')")
     @PatchMapping("/tasks/{taskId}/status")
-    public ResponseEntity<TaskResponse> updateTaskStatus(@PathVariable Long taskId, @RequestBody TaskRequest request){
-        return new ResponseEntity<>(taskService.updateStatus(taskId, request.getStatus()), HttpStatus.OK);
+    public ResponseEntity<TaskResponse> updateTaskStatus(@PathVariable Long taskId, @RequestParam TaskStatus status){
+        return new ResponseEntity<>(taskService.updateStatus(taskId, status), HttpStatus.OK);
     }
 
 }

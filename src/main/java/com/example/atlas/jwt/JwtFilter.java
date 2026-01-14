@@ -37,7 +37,7 @@ public class JwtFilter extends OncePerRequestFilter {
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
 
             String token = authHeader.substring(7);
-            if (jwtUtil.isValidateToken(token)) {
+            if (jwtUtil.isTokenExpired(token)) {
                 filterChain.doFilter(request, response);
                 return;
             }

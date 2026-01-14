@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.List;
 
 @RestController
@@ -18,13 +19,13 @@ public class CommentsController {
     private final CommentsService commentsService;
 
     @RequestMapping(path = "tasks/{taskId}/comments",method = RequestMethod.GET)
-    public ResponseEntity<List<CommentsResponse>> getComment(@PathVariable(name = "taskId") Long id){
-        return new ResponseEntity<>(commentsService.getComment(id), HttpStatus.OK);
+    public ResponseEntity<List<CommentsResponse>> getComments(@PathVariable(name = "taskId") Long id){
+        return new ResponseEntity<>(commentsService.getComments(id), HttpStatus.OK);
     }
 
     @RequestMapping(path = "tasks/{taskId}/comments",method = RequestMethod.POST)
-    public ResponseEntity<CommentsResponse> createComment(@PathVariable(name = "taskId") Long id, @Valid @RequestBody CommentsRequest commentsRequest){
-        return new ResponseEntity<>(commentsService.createComment(id,commentsRequest),HttpStatus.CREATED);
+    public ResponseEntity<CommentsResponse> createComment(@PathVariable(name = "taskId") Long id, @Valid @RequestBody CommentsRequest commentsRequest, Principal principal){
+        return new ResponseEntity<>(commentsService.createComment(id,commentsRequest,principal.getName()),HttpStatus.CREATED);
     }
 
     @GetMapping("/comments/{commentId}")
@@ -33,13 +34,13 @@ public class CommentsController {
     }
 
     @PutMapping("/comments/{commentId}")
-    public ResponseEntity<CommentsResponse> updateComment(@PathVariable Long commentId, @RequestBody CommentsRequest request){
-        return new ResponseEntity<>(commentsService.updateComment(commentId, request), HttpStatus.OK);
+    public ResponseEntity<CommentsResponse> updateComment(@PathVariable Long commentId, @RequestBody CommentsRequest request,Principal principal){
+        return new ResponseEntity<>(commentsService.updateComment(commentId, request,principal.getName()), HttpStatus.OK);
     }
 
     @DeleteMapping("/comments/{commentId}")
-    public ResponseEntity<Void> deleteComment(@PathVariable Long commentId){
-        commentsService.deleteComment(commentId);
+    public ResponseEntity<Void> deleteComment(@PathVariable Long commentId,Principal principal){
+        commentsService.deleteComment(commentId,principal.getName());
         return ResponseEntity.noContent().build();
     }
 }

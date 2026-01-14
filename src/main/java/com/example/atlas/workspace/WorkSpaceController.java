@@ -8,9 +8,9 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.List;
 
 @RestController
@@ -20,43 +20,32 @@ public class WorkSpaceController {
 
     private final WorkSpaceService workSpaceService;
 
-    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping()
-    public ResponseEntity<List<WorkSpaceResponse>> getWorkSpaces(@PageableDefault(size = 5,sort = "id",direction = Sort.Direction.ASC)Pageable pageable){
-        return new ResponseEntity<>(workSpaceService.getWorkSpaces(pageable), HttpStatus.OK);
+    public ResponseEntity<List<WorkSpaceResponse>> getWorkSpaces(
+            @PageableDefault(size = 5, sort = "id", direction = Sort.Direction.ASC) Pageable pageable,
+            Principal principal
+    ) {
+        return new ResponseEntity<>(workSpaceService.getWorkSpaces(pageable, principal.getName()), HttpStatus.OK);
     }
 
     @GetMapping("/{workspaceId}")
-    public ResponseEntity<WorkSpaceResponse> getWorkSpaceById(@PathVariable(name = "workspaceId") Long id){
+    public ResponseEntity<WorkSpaceResponse> getWorkSpaceById(@PathVariable(name = "workspaceId") Long id) {
         return new ResponseEntity<>(workSpaceService.getWorkSpaceById(id), HttpStatus.OK);
     }
 
     @PostMapping()
-    public ResponseEntity<WorkSpaceResponse> createWorkSpace(@RequestBody WorkSpaceRequest workSpaceRequest){
-        return new ResponseEntity<>(workSpaceService.createWorkSpace(workSpaceRequest), HttpStatus.CREATED);
+    public ResponseEntity<WorkSpaceResponse> createWorkSpace(@RequestBody WorkSpaceRequest workSpaceRequest, Principal principal) {
+        return new ResponseEntity<>(workSpaceService.createWorkSpace(workSpaceRequest, principal.getName()), HttpStatus.CREATED);
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{workspaceId}")
-    public ResponseEntity<WorkSpaceResponse> updateWorkSpace(@PathVariable Long workspaceId, @RequestBody WorkSpaceRequest request){
+    public ResponseEntity<WorkSpaceResponse> updateWorkSpace(@PathVariable Long workspaceId, @RequestBody WorkSpaceRequest request) {
         return new ResponseEntity<>(workSpaceService.updateWorkSpace(workspaceId, request), HttpStatus.OK);
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{workspaceId}")
-    public ResponseEntity<Void> deleteWorkSpace(@PathVariable Long workspaceId){
-        workSpaceService.deleteWorkSpace(workspaceId);
-        return ResponseEntity.noContent().build();
-    }
-
-    @PostMapping("/{workspaceId}/users")
-    public ResponseEntity<WorkSpaceResponse> addUserToWorkspace(@PathVariable Long workspaceId, @RequestParam String username){
-        return new ResponseEntity<>(workSpaceService.addUserToWorkspace(workspaceId, username), HttpStatus.OK);
-    }
-
-    @DeleteMapping("/{workspaceId}/users/{userId}")
-    public ResponseEntity<Void> removeUserFromWorkspace(@PathVariable Long workspaceId, @PathVariable Long userId){
-        workSpaceService.removeUserFromWorkspace(workspaceId, userId);
+    public ResponseEntity<Void> deleteWorkSpace(@PathVariable Long workspaceId, Principal principal) {
+        workSpaceService.deleteWorkSpace(workspaceId, principal.getName());
         return ResponseEntity.noContent().build();
     }
 }

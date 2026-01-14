@@ -1,6 +1,7 @@
 package com.example.atlas.users.dto;
 
 import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -11,12 +12,12 @@ import org.hibernate.validator.constraints.Length;
 @AllArgsConstructor
 @NoArgsConstructor
 public class UserRequest {
-    @NonNull
+    @NotNull
     private String name;
     @Email
     @NonNull
     private String email;
-    @NonNull
+    @NotNull
     @Length(min = 8)
     private String password;
 }

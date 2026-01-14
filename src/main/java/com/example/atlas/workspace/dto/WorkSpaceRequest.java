@@ -11,8 +11,4 @@ import lombok.NoArgsConstructor;
 public class WorkSpaceRequest {
     @NotNull
     private String name;
-
-    @NotNull
-    private String userName;
-
 }
