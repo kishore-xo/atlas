@@ -1,7 +1,7 @@
 package com.example.atlas.workspace;
 
 import com.example.atlas.task.Task;
-import com.example.atlas.users.Users;
+import com.example.atlas.workspacemembers.WorkspaceMembers;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -30,9 +30,8 @@ public class Workspace {
     @Column(nullable = false)
     private LocalDateTime createdAt;
 
-    @ManyToMany(mappedBy = "workspaces")
-    private List<Users> users = new ArrayList<>();
-
+    @OneToMany(mappedBy = "workspace", cascade = CascadeType.ALL)
+    private List<WorkspaceMembers> workSpaceMembers;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "workspace", orphanRemoval = true)
     private List<Task> tasks = new ArrayList<>();

@@ -3,7 +3,6 @@ package com.example.atlas.jwt;
 import com.example.atlas.exception.NotFoundException;
 import com.example.atlas.users.UserRepo;
 import com.example.atlas.users.Users;
-import org.jspecify.annotations.NonNull;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -18,7 +17,7 @@ public class CustomUserDetailService implements UserDetailsService  {
     }
 
     @Override
-    public UserDetails loadUserByUsername(@NonNull String email) throws UsernameNotFoundException {
+    public UserDetails loadUserByUsername( String email) throws UsernameNotFoundException {
         Users users =
                 userRepo.findUsersByEmail(email).orElseThrow(
                         () -> new NotFoundException("User not found with email: " + email));

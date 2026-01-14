@@ -9,6 +9,7 @@ public record CommentsResponse(
         Long id,
         String content,
         @JsonFormat(pattern = "dd-MM-yyyy HH:mm:ss") LocalDateTime createdAt,
+        Long userId,
         String username,
         String taskName
 ) {
@@ -18,6 +19,7 @@ public record CommentsResponse(
                 comments.getId(),
                 comments.getContent(),
                 comments.getCreatedAt(),
+                comments.getUsers().getId(),
                 comments.getUsers().getName(),
                 comments.getTask().getTitle()
         );

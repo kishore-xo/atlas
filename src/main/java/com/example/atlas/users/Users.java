@@ -1,9 +1,8 @@
 package com.example.atlas.users;
 
 import com.example.atlas.comments.Comments;
-import com.example.atlas.workspace.Workspace;
+import com.example.atlas.workspacemembers.WorkspaceMembers;
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -40,17 +39,11 @@ public class Users {
     @Enumerated(EnumType.STRING)
     private Role role;
 
-    @ManyToMany
-    @JoinTable(
-            name = "user_workspace",
-            joinColumns = @JoinColumn(name = "user_id"),
-            inverseJoinColumns = @JoinColumn(name = "workspace_id")
-    )
-    @JsonIgnore
-    private List<Workspace> workspaces = new ArrayList<>();
+
+    @OneToMany(mappedBy = "users", cascade = CascadeType.ALL)
+    private List<WorkspaceMembers> workspaceMembers;
 
     @OneToMany(mappedBy = "users", orphanRemoval = true, cascade = CascadeType.ALL)
-    @JsonIgnore
     private List<Comments> comments = new ArrayList<>();
 
 
