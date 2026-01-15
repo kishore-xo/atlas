@@ -6,6 +6,9 @@ import com.example.atlas.task.dto.TaskResponse;
 import com.example.atlas.workspace.WorkSpaceRepo;
 import com.example.atlas.workspace.Workspace;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
@@ -20,7 +23,7 @@ public class TaskService {
     private final TaskRepo taskRepo;
     private final WorkSpaceRepo workSpaceRepo;
 
-    public List<TaskResponse> getTasks(Long id,Pageable pageable) {
+    public List<TaskResponse> getTasks(Long id, Pageable pageable) {
         return taskRepo.findTasksByWorkspace_Id(id, pageable).stream()
                 .map(TaskResponse::new).toList();
     }
@@ -37,13 +40,14 @@ public class TaskService {
         return new TaskResponse(task);
     }
 
-
+    @Cacheable(value = "task", key = "#id")
     public TaskResponse getTask(Long id) {
 
         Task task = taskRepo.findById(id).orElseThrow(() -> new NotFoundException("Task not found with id: " + id));
         return new TaskResponse(task);
     }
 
+    @CachePut(value = "task", key = "#id")
     public TaskResponse updateTask(Long id, TaskRequest request) {
         Task task = taskRepo.findById(id).orElseThrow(() -> new NotFoundException("Task not found with id: " + id));
         task.setTitle(request.getTitle());
@@ -53,11 +57,13 @@ public class TaskService {
         return new TaskResponse(task);
     }
 
+    @CacheEvict(value = "task", key = "#id")
     public void deleteTask(Long id) {
         Task task = taskRepo.findById(id).orElseThrow(() -> new NotFoundException("Task not found with id: " + id));
         taskRepo.delete(task);
     }
 
+    @CachePut(value = "task", key = "#id")
     public TaskResponse updateStatus(Long id, TaskStatus status) {
         Task task = taskRepo.findById(id).orElseThrow(() -> new NotFoundException("Task not found with id: " + id));
         task.setStatus(status);

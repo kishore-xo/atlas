@@ -10,6 +10,9 @@ import com.example.atlas.workspace.Workspace;
 import com.example.atlas.workspacemembers.dto.AddMemberRequest;
 import com.example.atlas.workspacemembers.dto.WorkspaceMemberResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -33,6 +36,7 @@ public class WorkspaceMemberService {
                 .toList();
     }
 
+    @Cacheable(value = "member",key = "#workspaceId")
     public WorkspaceMemberResponse addMember(Long workspaceId, AddMemberRequest request, String currentUserEmail) {
         Workspace workspace = workSpaceRepo.findById(workspaceId)
                 .orElseThrow(() -> new NotFoundException("Workspace not found"));
@@ -62,6 +66,7 @@ public class WorkspaceMemberService {
         return new WorkspaceMemberResponse(memberRepo.save(newMember));
     }
 
+    @CacheEvict(value = "member",key = "#workspaceId")
     public void removeMember(Long workspaceId, Long userId, String currentUserEmail) {
         Users requester = userRepo.findUsersByEmail(currentUserEmail)
                 .orElseThrow(() -> new NotFoundException("User not found"));
@@ -91,7 +96,8 @@ public class WorkspaceMemberService {
 
          memberRepo.delete(targetMember);
     }
-    
+
+    @CachePut(value = "member",key = "#workspaceId")
     public WorkspaceMemberResponse updateMemberRole(Long workspaceId, Long userId, WorkSpaceRole newRole, String currentUserEmail) {
          Users requester = userRepo.findUsersByEmail(currentUserEmail)
                 .orElseThrow(() -> new NotFoundException("User not found"));

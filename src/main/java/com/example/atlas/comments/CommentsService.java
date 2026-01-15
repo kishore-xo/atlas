@@ -10,6 +10,9 @@ import com.example.atlas.users.UserRepo;
 import com.example.atlas.users.Users;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -40,11 +43,13 @@ public class CommentsService {
         return new CommentsResponse(comments);
     }
 
+    @Cacheable(value = "comment",key = "#id")
     public CommentsResponse getCommentById(Long id) {
         Comments comments = commentsRepo.findById(id).orElseThrow(() -> new NotFoundException("Comment not found: " + id));
         return new CommentsResponse(comments);
     }
 
+    @CachePut(value = "comment",key = "#id")
     public CommentsResponse updateComment(Long id, CommentsRequest request,String email) {
         Comments comments = commentsRepo.findById(id).orElseThrow(() -> new NotFoundException("Comment not found: " + id));
         if(!comments.getUsers().getEmail().equals(email)){
@@ -55,6 +60,7 @@ public class CommentsService {
         return new CommentsResponse(comments);
     }
 
+    @CacheEvict(value = "comment",key = "#id")
     public void deleteComment(Long id,String email) {
         Comments comments = commentsRepo.findById(id).orElseThrow(() -> new NotFoundException("Comment not found: " + id));
         if(!comments.getUsers().getEmail().equals(email)){

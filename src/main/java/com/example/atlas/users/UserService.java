@@ -5,6 +5,9 @@ import com.example.atlas.exception.NotFoundException;
 import com.example.atlas.users.dto.UserRequest;
 import com.example.atlas.users.dto.UserResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -27,10 +30,11 @@ public class UserService {
 
     }
 
+    @Cacheable(value = "user",key = "#id")
     public UserResponse getUser(Long id) {
         return repo.findById(id)
                 .map(UserResponse::new)
-                .orElseThrow();
+                .orElseThrow(()-> new NotFoundException("User not found with id: "+id));
     }
 
     public UserResponse createUser(UserRequest userRequest) {
@@ -44,11 +48,13 @@ public class UserService {
         return new UserResponse(users);
     }
 
+    @CacheEvict(value = "user",key = "#id")
     public void deleteUser(Long id) {
         Users users = repo.findById(id).orElseThrow(() -> new NotFoundException("User not found: " + id));
         repo.delete(users);
     }
 
+    @CachePut(value = "user",key = "#id")
     public UserResponse updateUser(Long id, UserRequest userRequest) {
         Users users = repo.findById(id).orElseThrow(() -> new NotFoundException("User not found: " + id));
         users.setName(userRequest.getName());
@@ -58,6 +64,7 @@ public class UserService {
         return new UserResponse(users);
     }
 
+    @CachePut(value = "user",key = "#userId")
     public UserResponse updateRole(long userId) {
         Users user = repo.findById(userId).orElseThrow(() -> new NotFoundException("User not found: " + userId));
         user.setRole(Role.ADMIN);
