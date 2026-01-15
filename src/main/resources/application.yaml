@@ -17,9 +17,34 @@ spring:
     enabled: true
     baseline-on-migrate: true
 
+  cache:
+    type: redis
+    cache-names:
+      - comment
+      - user
+      - workspace
+      - member
+      - task
+  data:
+    redis:
+      host: localhost
+      port: 6379
+
+  devtools:
+    restart:
+      enabled: false
 
 management:
   endpoints:
     web:
       exposure:
-        include: "*"
+        include: health,info,metrics
+  health:
+    db:
+      enabled: true
+
+logging:
+  level:
+    root: info
+    org.springframework.web: info
+    org.hibernate.jpa: warn

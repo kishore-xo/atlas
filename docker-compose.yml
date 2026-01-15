@@ -1,0 +1,39 @@
+version: "3.8"
+
+services:
+
+  db:
+    image: postgres
+    container_name: postgres-db
+    environment:
+      POSTGRES_DB: atlas
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+    ports:
+      - "5432:5432"
+
+  app:
+    build: .
+    container_name: atlas
+    ports:
+      - "8080:8080"
+    environment:
+      DB_URL: jdbc:postgresql://db:5432/atlas
+      DB_NAME: user
+      DB_PASSWORD: password
+    depends_on:
+      - db
+      - redis
+
+  redis:
+    image: redis
+    container_name: redis_atlas
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    restart: unless-stopped
+
+volumes:
+  redis_data:
+
