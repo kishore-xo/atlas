@@ -1,4 +1,4 @@
-package com.example.atlas.jwt;
+package com.example.atlas.util;
 
 import com.example.atlas.users.Users;
 import io.jsonwebtoken.Claims;

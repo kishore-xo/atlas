@@ -1,6 +1,7 @@
 package com.example.atlas.config;
 
-import com.example.atlas.jwt.JwtFilter;
+import com.example.atlas.filter.RateLimitFilter;
+import com.example.atlas.filter.JwtFilter;
 import com.example.atlas.users.Role;
 import com.example.atlas.users.UserRepo;
 import com.example.atlas.users.Users;
@@ -23,6 +24,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class AppConfiguration {
 
     private final JwtFilter jwtFilter;
+    private final RateLimitFilter rateLimitFilter;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity security) throws Exception {
@@ -38,6 +40,7 @@ public class AppConfiguration {
                 .httpBasic(AbstractHttpConfigurer::disable)
                 .formLogin(AbstractHttpConfigurer::disable)
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(rateLimitFilter, UsernamePasswordAuthenticationFilter.class)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .build();
     }

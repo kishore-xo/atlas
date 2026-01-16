@@ -1,5 +1,7 @@
-package com.example.atlas.jwt;
+package com.example.atlas.filter;
 
+import com.example.atlas.util.CustomUserDetailService;
+import com.example.atlas.util.JwtUtil;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -20,7 +22,7 @@ public class JwtFilter extends OncePerRequestFilter {
     private final JwtUtil jwtUtil;
     private final CustomUserDetailService customUserDetailService;
 
-    public JwtFilter(JwtUtil jwtUtil,  CustomUserDetailService customUserDetailService) {
+    public JwtFilter(JwtUtil jwtUtil, CustomUserDetailService customUserDetailService) {
         this.jwtUtil = jwtUtil;
         this.customUserDetailService = customUserDetailService;
     }
@@ -55,7 +57,7 @@ public class JwtFilter extends OncePerRequestFilter {
                     SecurityContextHolder.getContext().setAuthentication(authenticationToken);
                 }
             } catch (Exception e) {
-                }
+            }
         }
 
         filterChain.doFilter(request, response);

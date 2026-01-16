@@ -3,7 +3,7 @@ package com.example.atlas.auth;
 import com.example.atlas.auth.dto.AuthRequest;
 import com.example.atlas.auth.dto.AuthResponse;
 import com.example.atlas.exception.BadRequestException;
-import com.example.atlas.jwt.JwtUtil;
+import com.example.atlas.util.JwtUtil;
 import com.example.atlas.users.UserRepo;
 import com.example.atlas.users.Users;
 import com.example.atlas.users.UserService;
