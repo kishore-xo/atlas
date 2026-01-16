@@ -1,4 +1,4 @@
-package com.example.atlas.jwt;
+package com.example.atlas.util;
 
 import com.example.atlas.exception.NotFoundException;
 import com.example.atlas.users.UserRepo;
