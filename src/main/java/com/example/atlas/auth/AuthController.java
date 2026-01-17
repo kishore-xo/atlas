@@ -5,13 +5,14 @@ import com.example.atlas.auth.dto.AuthResponse;
 import com.example.atlas.users.dto.UserRequest;
 import com.example.atlas.users.dto.UserResponse;
 
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
+@Slf4j
 @RestController
 @RequestMapping("/auth")
 @RequiredArgsConstructor
@@ -25,9 +26,18 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public AuthResponse login(@RequestBody AuthRequest authRequest) {
-        return authService.login(authRequest);
+    public AuthResponse login(@RequestBody AuthRequest authRequest, HttpServletResponse response) {
+        return authService.login(authRequest, response);
     }
 
+    @PostMapping("/refresh")
+    public AuthResponse refreshToken(@CookieValue("refreshToken") String token) {
+        return authService.refreshToken(token);
+    }
 
+    @PostMapping("/logout")
+    public ResponseEntity<?> logout(@CookieValue("refreshToken") String token, HttpServletResponse response) {
+        authService.logout(token, response);
+        return ResponseEntity.ok("Logout");
+    }
 }
