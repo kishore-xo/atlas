@@ -10,7 +10,7 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 @EnableCaching
 public class AtlasApplication {
 
-    public static void main(String[] args) {
+    static void main(String[] args) {
         SpringApplication.run(AtlasApplication.class, args);
     }
 

@@ -1,119 +1,118 @@
-# Atlas Backend Application
+# Atlas Backend
 
-## Overview
+Atlas is a robust project management and collaboration backend built with modern Java standards. It serves as the core API for managing workspaces, tasks, comments, and team collaboration.
 
-Atlas is a robust backend application designed for project management and team collaboration. Built with **Spring Boot 3** and **Java 21**, it provides a comprehensive set of APIs for managing workspaces, users, tasks, and comments.
+## 🚀 Technology Stack
 
-## 🚀 Tech Stack
-
-- **Core:** Java 21, Spring Boot 3.2.2
+- **Java:** 21+ (Configured for Java 25)
+- **Framework:** Spring Boot 4.0.1
 - **Database:** PostgreSQL
 - **Caching:** Redis
-- **Security:** Spring Security, JWT (JSON Web Tokens)
-- **Database Migration:** Flyway
-- **API Documentation:** Swagger / OpenAPI 3
+- **Security:** Spring Security & JWT
+- **Migration:** Flyway
+- **Documentation:** OpenAPI 3 (Swagger)
 - **Containerization:** Docker & Docker Compose
-- **Tooling:** Maven, Lombok
+- **Resilience:** Custom Rate Limiting
 
 ## 📂 Project Structure
 
-The application is structured around domain-driven modules:
+The application follows a domain-driven package structure under `com.example.atlas`:
 
-- **Auth:** Authentication and authorization logic.
-- **Users:** User profile management.
-- **Workspace:** Workspace creation and configuration.
-- **WorkspaceMembers:** Member management within workspaces.
-- **Task:** Task creation, assignment, and tracking.
-- **Comments:** Commenting system for tasks.
-- **Config:** Application-wide configurations (Security, Redis, OpenAPI).
+| Module | Description |
+|--------|-------------|
+| `auth` | Authentication logic & token management |
+| `users` | User profile & account management |
+| `workspace` | Workspace creation & settings |
+| `workspacemembers` | Member roles & permissions |
+| `task` | Task management & tracking |
+| `comments` | Task commenting system |
+| `filter` | Security filters (JWT, Rate Limiting) |
+| `refreshToken` | JWT refresh token handling |
+| `config` | App-wide configuration (Security, Redis, etc.) |
+| `exception` | Global exception handling |
 
 ## 🛠 Prerequisites
 
-Ensure you have the following installed:
-
-- **Java 21 JDK**
+- **Java JDK 21** or higher
 - **Maven**
-- **Docker & Docker Compose**
+- **Docker** & **Docker Compose**
 
 ## ⚙️ Configuration
 
-The application uses **Spring Profiles** to manage configuration.
+The application uses `application.yaml` for configuration. Key environment variables:
 
-### Environment Variables
-
-The application relies on the following environment variables for database connection (defined in `src/main/resources/application.yaml`). You must set these when running the application locally:
-
-| Variable | Description | Example |
-|----------|-------------|---------|
-| `DB_URL` | JDBC URL for PostgreSQL | `jdbc:postgresql://localhost:5433/atlas` |
-| `DB_NAME` | Database Username | `user` |
-| `DB_PASSWORD` | Database Password | `password` |
-
-### Redis Configuration
-By default, the application expects Redis at `localhost:6379`. If you use the provided `docker-compose.yml` for dependencies, Redis is mapped to port **6380**. You may need to override `spring.data.redis.port` in your configuration or update your run configuration.
+| Variable | Description | Default (Docker) | Local Example |
+|----------|-------------|------------------|---------------|
+| `DB_URL` | PostgreSQL JDBC URL | `jdbc:postgresql://db:5432/atlas` | `jdbc:postgresql://localhost:5432/atlas` |
+| `DB_NAME` | Database User | `user` | `user` |
+| `DB_PASSWORD` | Database Password | `password` | `password` |
+| `spring.data.redis.host` | Redis Host | `redis` | `localhost` |
 
 ## 🏃‍♂️ Getting Started
 
-### 1. Start Infrastructure Services
+### Option 1: Run with Docker (Recommended)
 
-Use Docker Compose to start PostgreSQL and Redis:
+Since the Dockerfile uses a pre-built JAR, you must package the application first:
 
-```bash
-docker-compose up db redis -d
-```
+1. **Build the JAR file:**
+   ```bash
+   mvn clean package -DskipTests
+   ```
 
-> **Note:**
-> - PostgreSQL will be available at `localhost:5433`
-> - Redis will be available at `localhost:6380`
+2. **Run the application stack:**
+   ```bash
+   docker-compose up --build
+   ```
+- API: `http://localhost:8080`
+- Swagger UI: `http://localhost:8080/swagger-ui/index.html`
 
-### 2. Build the Application
+### Option 2: Local Development
 
-```bash
-mvn clean install
-```
+1. **Start dependencies** (PostgreSQL & Redis):
+   ```bash
+   docker-compose up db redis -d
+   ```
+   *Note: This maps Postgres to port `5432` and Redis to `6379` on localhost.*
 
-### 3. Run Locally
+2. **Run the application**:
+   
+   **Using Maven:**
+   ```bash
+   # Linux/Mac
+   export DB_URL=jdbc:postgresql://localhost:5432/atlas
+   export DB_NAME=user
+   export DB_PASSWORD=password
+   mvn spring-boot:run
 
-You can run the application using Maven or your IDE. Ensure you provide the necessary environment variables.
+   # Windows (PowerShell)
+   $env:DB_URL="jdbc:postgresql://localhost:5432/atlas"
+   $env:DB_NAME="user"
+   $env:DB_PASSWORD="password"
+   mvn spring-boot:run
+   ```
 
-**Using CLI (PowerShell example):**
+### 👤 Default Credentials
 
-```powershell
-$env:DB_URL="jdbc:postgresql://localhost:5433/atlas"
-$env:DB_NAME="user"
-$env:DB_PASSWORD="password"
-# Override Redis port since docker-compose uses 6380
-mvn spring-boot:run -Dspring-boot.run.arguments="--spring.data.redis.port=6380"
-```
-
-**Using IDE(IntelliJ/Eclipse):**
-Set the environment variables in your Run Configuration and add `--spring.data.redis.port=6380` to your Program Arguments.
-
-### 4. Run Fully with Docker
-
-To run the entire stack (Database, Redis, and Application) within Docker:
-
-```bash
-docker-compose up --build
-```
-
-The application will be accessible at `http://localhost:8080`.
+On first startup, the application creates a default Admin user:
+- **Email:** `admin@gmail.com`
+- **Password:** `admin123`
 
 ## 📚 API Documentation
 
-Once the application is running, you can explore and test the APIs using the Swagger UI:
+Interactive API documentation is available via Swagger UI when the app is running:
 
-👉 **[http://localhost:8080/swagger-ui.html](http://localhost:8080/swagger-ui.html)**
+👉 **[http://localhost:8080/swagger-ui/index.html](http://localhost:8080/swagger-ui/index.html)**
 
 ## 🛡 Security
 
-The application uses JWT for security.
-1.  **Sign Up/Login:** Use the Auth endpoints (`/auth/**`) to get a token.
-2.  **Authentication:** Pass the token in the `Authorization` header as `Bearer <token>` for protected endpoints.
+The application implements:
+1. **JWT Authentication**: Secured endpoints require a valid Bearer token.
+2. **Rate Limiting**: Custom filter to prevent abuse.
+3. **Role-Based Access**: Granular permissions (USER, ADMIN, etc.).
 
 ## 🧪 Testing
 
-Run unit and integration tests using Maven:
+To run unit and integration tests:
 
 ```bash
 mvn test
