@@ -12,7 +12,6 @@ import com.example.atlas.workspacemembers.dto.WorkspaceMemberResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -36,7 +35,6 @@ public class WorkspaceMemberService {
                 .toList();
     }
 
-    @Cacheable(value = "member",key = "#workspaceId")
     public WorkspaceMemberResponse addMember(Long workspaceId, AddMemberRequest request, String currentUserEmail) {
         Workspace workspace = workSpaceRepo.findById(workspaceId)
                 .orElseThrow(() -> new NotFoundException("Workspace not found"));
@@ -51,7 +49,7 @@ public class WorkspaceMemberService {
             throw new ForbiddenException("Only Admins and Owners can add members");
         }
 
-        Users newUser = userRepo.findById(request.userId())
+        Users newUser = userRepo.findUsersByEmail(request.email())
                 .orElseThrow(() -> new NotFoundException("User to add not found"));
 
         if (memberRepo.existsByWorkspaceIdAndUsersId(workspaceId, newUser.getId())) {
@@ -62,22 +60,22 @@ public class WorkspaceMemberService {
         newMember.setWorkspace(workspace);
         newMember.setUsers(newUser);
         newMember.setRole(request.workSpaceRole() != null ? request.workSpaceRole() : WorkSpaceRole.MEMBER);
-        
+
         return new WorkspaceMemberResponse(memberRepo.save(newMember));
     }
 
-    @CacheEvict(value = "member",key = "#workspaceId")
+    @CacheEvict(value = "member", key = "#workspaceId")
     public void removeMember(Long workspaceId, Long userId, String currentUserEmail) {
         Users requester = userRepo.findUsersByEmail(currentUserEmail)
                 .orElseThrow(() -> new NotFoundException("User not found"));
-        
+
         WorkspaceMembers requesterMember = memberRepo.findByWorkspaceIdAndUsersId(workspaceId, requester.getId())
                 .orElseThrow(() -> new ForbiddenException("You are not a member of this workspace"));
 
         // Self-removal (Leave Workspace)
         if (requester.getId().equals(userId)) {
             memberRepo.deleteByWorkspaceIdAndUsersId(workspaceId, userId);
-             return;
+            return;
         }
 
         // Removing others
@@ -86,20 +84,20 @@ public class WorkspaceMemberService {
         }
 
         // fetch target member
-         WorkspaceMembers targetMember = memberRepo.findByWorkspaceIdAndUsersId(workspaceId, userId)
+        WorkspaceMembers targetMember = memberRepo.findByWorkspaceIdAndUsersId(workspaceId, userId)
                 .orElseThrow(() -> new NotFoundException("Member not found"));
 
-         // Prevent removing Owner
-         if (targetMember.getRole() == WorkSpaceRole.OWNER) {
-             throw new ForbiddenException("Cannot remove the Owner of the workspace");
-         }
+        // Prevent removing Owner
+        if (targetMember.getRole() == WorkSpaceRole.OWNER) {
+            throw new ForbiddenException("Cannot remove the Owner of the workspace");
+        }
 
-         memberRepo.delete(targetMember);
+        memberRepo.delete(targetMember);
     }
 
-    @CachePut(value = "member",key = "#workspaceId")
+    @CachePut(value = "member", key = "#workspaceId")
     public WorkspaceMemberResponse updateMemberRole(Long workspaceId, Long userId, WorkSpaceRole newRole, String currentUserEmail) {
-         Users requester = userRepo.findUsersByEmail(currentUserEmail)
+        Users requester = userRepo.findUsersByEmail(currentUserEmail)
                 .orElseThrow(() -> new NotFoundException("User not found"));
 
         WorkspaceMembers requesterMember = memberRepo.findByWorkspaceIdAndUsersId(workspaceId, requester.getId())
@@ -108,15 +106,19 @@ public class WorkspaceMemberService {
         if (requesterMember.getRole() != WorkSpaceRole.OWNER && requesterMember.getRole() != WorkSpaceRole.ADMIN) {
             throw new ForbiddenException("Insufficient permissions");
         }
-        
+
         // Only Owner can change others to/from Owner? Let's say only Owner can make Admins for simplicity, 
         // or Admin can make other Admins.
         // Let's stick to: Owner > Admin > Member.
-        
+
         WorkspaceMembers targetMember = memberRepo.findByWorkspaceIdAndUsersId(workspaceId, userId)
                 .orElseThrow(() -> new NotFoundException("Member not found"));
 
         targetMember.setRole(newRole);
         return new WorkspaceMemberResponse(memberRepo.save(targetMember));
+    }
+
+    public boolean isMember(Long id, String email) {
+        return memberRepo.existsByWorkspaceIdAndUsers_Email(id, email);
     }
 }

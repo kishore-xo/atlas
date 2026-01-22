@@ -13,7 +13,8 @@ public record TaskResponse
          TaskStatus status, String workSpaceName,
          @JsonFormat(pattern = "dd-MM-yyyy HH:mm:ss")
          LocalDateTime createdAt,
-         List<String> comments
+         List<String> comments,
+         Long workspaceId
         ) {
 
     public TaskResponse(Task task) {
@@ -25,7 +26,8 @@ public record TaskResponse
                 task.getWorkspace().getName(),
                 task.getCreatedAt(),
                 task.getComments().stream()
-                        .map(Comments::getContent).toList()
+                        .map(Comments::getContent).toList(),
+                task.getWorkspace().getId()
 
         );
     }
