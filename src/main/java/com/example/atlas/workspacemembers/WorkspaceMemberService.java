@@ -49,7 +49,7 @@ public class WorkspaceMemberService {
             throw new ForbiddenException("Only Admins and Owners can add members");
         }
 
-        Users newUser = userRepo.findById(request.userId())
+        Users newUser = userRepo.findUsersByEmail(request.email())
                 .orElseThrow(() -> new NotFoundException("User to add not found"));
 
         if (memberRepo.existsByWorkspaceIdAndUsersId(workspaceId, newUser.getId())) {

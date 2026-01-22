@@ -1,6 +1,7 @@
 package com.example.atlas.chat;
 
 import com.example.atlas.chat.dto.MessageDto;
+import com.example.atlas.users.UserRepo;
 import com.example.atlas.workspacemembers.WorkspaceMemberService;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
@@ -19,10 +20,12 @@ public class MessageController {
 
     private final WorkspaceMemberService workspaceMemberService;
     private final SimpMessagingTemplate simpMessagingTemplate;
+    private final UserRepo userRepo;
 
-    public MessageController(WorkspaceMemberService workspaceMemberService, SimpMessagingTemplate simpMessagingTemplate) {
+    public MessageController(WorkspaceMemberService workspaceMemberService, SimpMessagingTemplate simpMessagingTemplate, UserRepo userRepo) {
         this.workspaceMemberService = workspaceMemberService;
         this.simpMessagingTemplate = simpMessagingTemplate;
+        this.userRepo = userRepo;
     }
 
     @MessageMapping("/chat")
@@ -38,9 +41,16 @@ public class MessageController {
         if (!workspaceMemberService.isMember(workspaceId, email)) {
             throw new AccessDeniedException("Not a member of the workspace");
         }
+        String username = String.valueOf(userRepo.findUsersByEmail(email));
+
+        MessageDto response = MessageDto
+                .builder()
+                .username(username)
+                .content(messageDto.content())
+                .build();
         simpMessagingTemplate.convertAndSend(
                 "/topic/workspace/" + workspaceId,
-                messageDto
+                response
         );
 
     }
