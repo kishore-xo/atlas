@@ -14,7 +14,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
-import java.nio.file.AccessDeniedException;
 
 @Component
 public class JwtFilter extends OncePerRequestFilter {
@@ -26,11 +25,6 @@ public class JwtFilter extends OncePerRequestFilter {
     public JwtFilter(JwtUtil jwtUtil, CustomUserDetailService customUserDetailService) {
         this.jwtUtil = jwtUtil;
         this.customUserDetailService = customUserDetailService;
-    }
-
-    @Override
-    protected boolean shouldNotFilter(HttpServletRequest request) {
-        return request.getServletPath().startsWith("/ws");
     }
 
     @Override
@@ -63,7 +57,6 @@ public class JwtFilter extends OncePerRequestFilter {
                     SecurityContextHolder.getContext().setAuthentication(authenticationToken);
                 }
             } catch (Exception e) {
-                throw  new AccessDeniedException("Jwt token is not valid");
             }
         }
 

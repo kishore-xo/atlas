@@ -3,8 +3,6 @@ package com.example.atlas.exception;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.AccessDeniedException;
-import org.springframework.security.authorization.AuthorizationDeniedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -45,12 +43,6 @@ public class GlobalExceptionHandling {
     public ResponseEntity<ApiError> handleForbidden(Exception e, HttpServletRequest request) {
         return ResponseEntity.status(HttpStatus.FORBIDDEN)
                 .body(ApiError.of(403, e.getMessage(), request.getRequestURI()));
-    }
-
-    @ExceptionHandler({AccessDeniedException.class, AuthorizationDeniedException.class})
-    public ResponseEntity<ApiError> handleAccessDenied(Exception e, HttpServletRequest request) {
-        return ResponseEntity.status(HttpStatus.FORBIDDEN)
-                .body(ApiError.of(403, "Access Denied: " + e.getMessage(), request.getRequestURI()));
     }
 
 }

@@ -29,8 +29,8 @@ public class WorkSpaceController {
     }
 
     @GetMapping("/{workspaceId}")
-    public ResponseEntity<WorkSpaceResponse> getWorkSpaceById(@PathVariable(name = "workspaceId") Long id, Principal principal) {
-        return new ResponseEntity<>(workSpaceService.getWorkSpaceById(id, principal.getName()), HttpStatus.OK);
+    public ResponseEntity<WorkSpaceResponse> getWorkSpaceById(@PathVariable(name = "workspaceId") Long id) {
+        return new ResponseEntity<>(workSpaceService.getWorkSpaceById(id), HttpStatus.OK);
     }
 
     @PostMapping()
