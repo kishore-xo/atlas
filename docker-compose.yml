@@ -22,6 +22,8 @@ services:
       DB_NAME: user
       DB_PASSWORD: password
       spring.data.redis.host: redis
+      MAIL_USERNAME: //YOUR EMAIL ID
+      MAIL_PASSWORD: //ABOVE EMAIL ID APP PASSWORD
     depends_on:
       - db
       - redis

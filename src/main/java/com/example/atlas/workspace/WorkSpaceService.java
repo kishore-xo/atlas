@@ -12,7 +12,6 @@ import com.example.atlas.workspacemembers.WorkspaceMembers;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -29,9 +28,14 @@ public class WorkSpaceService {
     private final UserRepo userRepo;
     private final WorkspaceMemberRepo workspaceMemberRepo;
 
-    @Cacheable(value = "workspace",key = "#id")
-    public WorkSpaceResponse getWorkSpaceById(Long id) {
+    public WorkSpaceResponse getWorkSpaceById(Long id, String email) {
         Workspace workspace = workSpaceRepo.findById(id).orElseThrow(() -> new NotFoundException("WorkSpace not found: " + id));
+        
+        // Security check: Ensure user is a member
+        if (!workspaceMemberRepo.existsByWorkspaceIdAndUsers_Email(id, email)) {
+            throw new com.example.atlas.exception.ForbiddenException("Access Denied: You are not a member of this workspace");
+        }
+        
         return new WorkSpaceResponse(workspace);
     }
 

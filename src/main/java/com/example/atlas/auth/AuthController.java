@@ -2,6 +2,7 @@ package com.example.atlas.auth;
 
 import com.example.atlas.auth.dto.AuthRequest;
 import com.example.atlas.auth.dto.AuthResponse;
+import com.example.atlas.resetPassword.ResetPasswordService;
 import com.example.atlas.users.dto.UserRequest;
 import com.example.atlas.users.dto.UserResponse;
 
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 public class AuthController {
 
     private final AuthService authService;
+    private final ResetPasswordService resetPasswordService;
 
     @PostMapping("/register")
     public UserResponse register(@Valid @RequestBody UserRequest userRequest) {
@@ -39,5 +41,15 @@ public class AuthController {
     public ResponseEntity<?> logout(@CookieValue("refreshToken") String token, HttpServletResponse response) {
         authService.logout(token, response);
         return ResponseEntity.ok("Logout");
+    }
+
+    @PostMapping("/forgetPassword")
+    public void forgetPassword(@RequestParam String email) {
+        resetPasswordService.forgetPassword(email);
+    }
+
+    @PostMapping("/resetPassword")
+    public ResponseEntity<String> resetPassword(@RequestParam String token, @RequestParam String newPassword) {
+        return ResponseEntity.ok(resetPasswordService.resetPassword(token, newPassword));
     }
 }

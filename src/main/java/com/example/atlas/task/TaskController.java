@@ -26,7 +26,7 @@ public class TaskController {
     }
 
 
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     @RequestMapping(path = "workspaces/{workspaceId}/tasks",method = RequestMethod.POST)
     public ResponseEntity<TaskResponse> createTask(@PathVariable Long workspaceId, @Valid @RequestBody TaskRequest taskRequest) {
         return new ResponseEntity<>(taskService.createTask(workspaceId,taskRequest),HttpStatus.CREATED);
@@ -37,20 +37,20 @@ public class TaskController {
         return new ResponseEntity<>(taskService.getTask(id),HttpStatus.OK);
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     @PutMapping("/tasks/{taskId}")
     public ResponseEntity<TaskResponse> updateTask(@PathVariable Long taskId, @RequestBody TaskRequest request){
         return new ResponseEntity<>(taskService.updateTask(taskId, request), HttpStatus.OK);
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     @DeleteMapping("/tasks/{taskId}")
     public ResponseEntity<Void> deleteTask(@PathVariable Long taskId){
         taskService.deleteTask(taskId);
         return ResponseEntity.noContent().build();
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     @PatchMapping("/tasks/{taskId}/status")
     public ResponseEntity<TaskResponse> updateTaskStatus(@PathVariable Long taskId, @RequestParam TaskStatus status){
         return new ResponseEntity<>(taskService.updateStatus(taskId, status), HttpStatus.OK);

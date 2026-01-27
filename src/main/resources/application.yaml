@@ -33,6 +33,20 @@ spring:
   devtools:
     restart:
       enabled: false
+  banner:
+    location: banner.txt
+
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    password: ${MAIL_PASSWORD}
+    username: ${MAIL_USERNAME}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
 
 management:
   endpoints:

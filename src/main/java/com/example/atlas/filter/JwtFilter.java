@@ -28,6 +28,11 @@ public class JwtFilter extends OncePerRequestFilter {
     }
 
     @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) {
+        return request.getServletPath().startsWith("/ws");
+    }
+
+    @Override
     protected void doFilterInternal(
             HttpServletRequest request,
             HttpServletResponse response,
@@ -57,6 +62,8 @@ public class JwtFilter extends OncePerRequestFilter {
                     SecurityContextHolder.getContext().setAuthentication(authenticationToken);
                 }
             } catch (Exception e) {
+                // Log error but allow request to proceed (e.g. for public endpoints like /login)
+                System.out.println("JWT Validation failed: " + e.getMessage());
             }
         }
 
