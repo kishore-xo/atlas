@@ -15,6 +15,7 @@ import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
+import org.springframework.data.domain.Pageable;
 import java.util.List;
 
 @Slf4j
@@ -25,8 +26,8 @@ public class CommentsService {
     private final CommentsRepo commentsRepo;
     private final UserRepo userRepo;
 
-    public List<CommentsResponse> getComments(Long id) {
-        return commentsRepo.findCommentsByTask_Id(id).stream()
+    public List<CommentsResponse> getComments(Long id, Pageable pageable) {
+        return commentsRepo.findCommentsByTask_Id(id, pageable).stream()
                 .map((CommentsResponse::new))
                 .toList();
 

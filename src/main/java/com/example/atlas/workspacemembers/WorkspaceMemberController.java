@@ -5,7 +5,6 @@ import com.example.atlas.workspacemembers.dto.WorkspaceMemberResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
@@ -44,7 +43,6 @@ public class WorkspaceMemberController {
     }
 
     @PatchMapping("/{userId}")
-    @PreAuthorize("hasRole('OWNER')")
     public ResponseEntity<WorkspaceMemberResponse> updateMemberRole(
             @PathVariable Long workspaceId,
             @PathVariable Long userId,

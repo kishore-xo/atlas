@@ -37,7 +37,7 @@ public class RefreshTokenService {
         return tokenRepo.save(refreshToken).getToken();
     }
 
-    public RefreshToken vaildRefreshToken(String token) {
+    public RefreshToken validRefreshToken(String token) {
         RefreshToken refreshToken = tokenRepo.findByToken(token).orElseThrow(
                 () -> new ForbiddenException("Invalid refresh token")
         );

@@ -8,6 +8,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import java.security.Principal;
 import java.util.List;
 
@@ -18,8 +21,8 @@ public class CommentsController {
     private final CommentsService commentsService;
 
     @RequestMapping(path = "tasks/{taskId}/comments",method = RequestMethod.GET)
-    public ResponseEntity<List<CommentsResponse>> getComments(@PathVariable(name = "taskId") Long id){
-        return new ResponseEntity<>(commentsService.getComments(id), HttpStatus.OK);
+    public ResponseEntity<List<CommentsResponse>> getComments(@PathVariable(name = "taskId") Long id, @PageableDefault(size = 5, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable){
+        return new ResponseEntity<>(commentsService.getComments(id, pageable), HttpStatus.OK);
     }
 
     @RequestMapping(path = "tasks/{taskId}/comments",method = RequestMethod.POST)

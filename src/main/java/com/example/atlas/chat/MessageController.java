@@ -1,7 +1,10 @@
 package com.example.atlas.chat;
 
 import com.example.atlas.chat.dto.MessageDto;
+import com.example.atlas.exception.NotFoundException;
+
 import com.example.atlas.users.UserRepo;
+import com.example.atlas.users.Users;
 import com.example.atlas.workspacemembers.WorkspaceMemberService;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
@@ -41,11 +44,13 @@ public class MessageController {
         if (!workspaceMemberService.isMember(workspaceId, email)) {
             throw new AccessDeniedException("Not a member of the workspace");
         }
-        String username = String.valueOf(userRepo.findUsersByEmail(email));
+        Users users = userRepo.findUsersByEmail(email).orElseThrow(
+                () -> new NotFoundException("User not found")
+        );
 
         MessageDto response = MessageDto
                 .builder()
-                .username(username)
+                .username(users.getName())
                 .content(messageDto.content())
                 .build();
         simpMessagingTemplate.convertAndSend(
