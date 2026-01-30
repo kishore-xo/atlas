@@ -38,8 +38,10 @@ public class AuthController {
     }
 
     @PostMapping("/logout")
-    public ResponseEntity<?> logout(@CookieValue(name = "refreshToken") String token, HttpServletResponse response) {
-        authService.logout(token, response);
+    public ResponseEntity<?> logout(@CookieValue(name = "refreshToken", required = false) String token, HttpServletResponse response) {
+        if (token != null) {
+            authService.logout(token, response);
+        }
         return ResponseEntity.ok("Logout");
     }
 

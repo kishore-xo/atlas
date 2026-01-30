@@ -8,9 +8,11 @@ import org.springframework.security.authorization.AuthorizationDeniedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.stream.Collectors;
 
+@Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandling {
 
@@ -37,8 +39,9 @@ public class GlobalExceptionHandling {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiError> handleGeneric(Exception e, HttpServletRequest request) {
+        log.error("Unhandled exception occurred", e);
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(ApiError.of(500, "Internal server error: ", request.getRequestURI()));
+                .body(ApiError.of(500, "Internal server error: " + e.getMessage(), request.getRequestURI()));
     }
 
     @ExceptionHandler(ForbiddenException.class)

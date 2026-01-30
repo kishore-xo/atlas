@@ -20,14 +20,14 @@ public class Schedule {
         this.refreshTokenRepo = refreshTokenRepo;
     }
 
-    @Scheduled(fixedDelay = 1000 * 60)
+    @Scheduled(fixedDelay = 1000 * 60 * 60)
     @Transactional
     public void deleteResetPassword() {
         resetPasswordRepo.deleteByUsed(true);
         resetPasswordRepo.deleteByExpireAt(LocalDateTime.now());
     }
 
-    @Scheduled(fixedDelay = 1000 * 60)
+    @Scheduled(fixedDelay = 1000 * 60 * 60)
     @Transactional
     public void deleteRefreshToken() {
         refreshTokenRepo.deleteRefreshTokenByExpireTime(Instant.now());

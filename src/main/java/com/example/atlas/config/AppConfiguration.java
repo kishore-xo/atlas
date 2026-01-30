@@ -1,5 +1,6 @@
 package com.example.atlas.config;
 
+import com.example.atlas.auth.OAuth2SuccessHandler;
 import com.example.atlas.filter.RateLimitFilter;
 import com.example.atlas.filter.JwtFilter;
 import com.example.atlas.users.Role;
@@ -32,6 +33,7 @@ public class AppConfiguration {
 
     private final JwtFilter jwtFilter;
     private final RateLimitFilter rateLimitFilter;
+    private final OAuth2SuccessHandler oAuth2SuccessHandler;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity security) {
@@ -48,6 +50,9 @@ public class AppConfiguration {
                 )
                 .httpBasic(AbstractHttpConfigurer::disable)
                 .formLogin(AbstractHttpConfigurer::disable)
+                .oauth2Login(oauth2 -> oauth2
+                        .successHandler(oAuth2SuccessHandler)
+                )
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(rateLimitFilter, UsernamePasswordAuthenticationFilter.class)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
