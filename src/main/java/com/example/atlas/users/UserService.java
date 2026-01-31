@@ -118,8 +118,6 @@ public class UserService {
     public Object profileImage(String email) throws MalformedURLException {
         Users users = repo.findUsersByEmail(email)
                 .orElseThrow(() -> new NotFoundException("User not found"));
-
-        String profile = users.getProfile();
         Path filePath = Path.of("src/main/resources/uploads");
         return new UrlResource(filePath.toUri()+users.getProfile());
     }
