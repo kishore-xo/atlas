@@ -82,4 +82,10 @@ public class AuthService {
         response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
 
     }
+
+    public UserResponse getCurrentUser(String email) {
+        Users user = userRepo.findUsersByEmail(email)
+                .orElseThrow(() -> new BadRequestException("User not found"));
+        return new UserResponse(user);
+    }
 }

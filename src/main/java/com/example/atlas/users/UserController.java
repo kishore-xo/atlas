@@ -4,24 +4,30 @@ package com.example.atlas.users;
 import com.example.atlas.users.dto.UserRequest;
 import com.example.atlas.users.dto.UserResponse;
 import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.net.MalformedURLException;
+import java.security.Principal;
 import java.util.List;
 
 @RestController
 @RequestMapping("/users")
-@RequiredArgsConstructor
 public class UserController {
 
     private final UserService service;
+
+    public UserController(UserService service) {
+        this.service = service;
+    }
 
 
     @PreAuthorize("hasRole('ADMIN')")
@@ -59,5 +65,18 @@ public class UserController {
     @PatchMapping("/role/{userId}")
     public ResponseEntity<UserResponse> updateRole(@PathVariable long userId) {
         return new ResponseEntity<>(service.updateRole(userId), HttpStatus.ACCEPTED);
+    }
+
+    @PostMapping("/update-profile")
+    public ResponseEntity<UserResponse> profileUpdate(@RequestParam(name = "file") MultipartFile file, Principal principal) {
+        return ResponseEntity.ok(service.profileUpdate(file, principal.getName()));
+    }
+
+    @GetMapping("/profile-image")
+    public ResponseEntity<Object> profileImage(Principal principal) throws MalformedURLException {
+        Object profileImage = service.profileImage(principal.getName());
+        return ResponseEntity.ok()
+                .contentType(MediaType.IMAGE_JPEG)
+                .body(profileImage);
     }
 }

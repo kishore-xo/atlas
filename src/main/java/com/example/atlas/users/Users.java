@@ -31,6 +31,8 @@ public class Users {
     @Column(nullable = false)
     private String password;
 
+    private String profile;
+
     @CreationTimestamp
     @JsonFormat(pattern = "dd-MM-yyyy HH:mm:ss")
     @Column(updatable = false, nullable = false)
