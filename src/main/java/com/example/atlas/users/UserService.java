@@ -30,6 +30,7 @@ public class UserService {
 
     private final UserRepo repo;
     private final BCryptPasswordEncoder encoder;
+    private final String profilePath ="src/main/resources/uploads/profileImage";
 
 
     public List<UserResponse> getByPage(Pageable pageable) {
@@ -103,7 +104,7 @@ public class UserService {
 
 
         try {
-            Path filePath = Path.of("src/main/resources/uploads");
+            Path filePath = Path.of(profilePath);
 
             if (!Files.exists(filePath)) {
                 Files.createDirectories(filePath);
@@ -118,7 +119,7 @@ public class UserService {
     public Object profileImage(String email) throws MalformedURLException {
         Users users = repo.findUsersByEmail(email)
                 .orElseThrow(() -> new NotFoundException("User not found"));
-        Path filePath = Path.of("src/main/resources/uploads");
+        Path filePath = Path.of(profilePath);
         return new UrlResource(filePath.toUri()+users.getProfile());
     }
 }

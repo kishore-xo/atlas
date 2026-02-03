@@ -67,7 +67,7 @@ public class UserController {
         return new ResponseEntity<>(service.updateRole(userId), HttpStatus.ACCEPTED);
     }
 
-    @PostMapping("/update-profile")
+    @PostMapping("/profile-image")
     public ResponseEntity<UserResponse> profileUpdate(@RequestParam(name = "file") MultipartFile file, Principal principal) {
         return ResponseEntity.ok(service.profileUpdate(file, principal.getName()));
     }

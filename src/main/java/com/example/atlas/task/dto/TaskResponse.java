@@ -11,6 +11,7 @@ import java.util.List;
 public record TaskResponse
         (Long id, String title, String description,
          TaskStatus status, String workSpaceName,
+         String fileName,
          @JsonFormat(pattern = "dd-MM-yyyy HH:mm:ss")
          LocalDateTime createdAt,
          List<String> comments,
@@ -24,6 +25,7 @@ public record TaskResponse
                 task.getDescription(),
                 task.getStatus(),
                 task.getWorkspace().getName(),
+                task.getFileName(),
                 task.getCreatedAt(),
                 task.getComments().stream()
                         .map(Comments::getContent).toList(),

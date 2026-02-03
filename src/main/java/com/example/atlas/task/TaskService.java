@@ -14,7 +14,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.example.atlas.exception.NotFoundException;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.util.List;
 
 @Service
@@ -24,6 +29,7 @@ public class TaskService {
 
     private final TaskRepo taskRepo;
     private final WorkSpaceRepo workSpaceRepo;
+    private final String filePath = "src/main/resources/uploads/taskfiles";
 
     public List<TaskResponse> getTasks(Long id, Pageable pageable) {
         return taskRepo.findTasksByWorkspace_Id(id, pageable).stream()
@@ -73,4 +79,26 @@ public class TaskService {
         return new TaskResponse(task);
     }
 
+    public TaskResponse fileUpload(MultipartFile file, Long taskId) {
+        if (file.isEmpty()) {
+            throw new RuntimeException("File is empty");
+        }
+
+        Task task = taskRepo.findById(taskId).orElseThrow(() -> new NotFoundException("Task not found with id: " + taskId));
+
+        String filename = task.getTitle() + ".pdf";
+
+        try {
+            Path path = Path.of(filePath);
+            if (!Files.exists(path)) {
+                Files.createDirectories(path);
+            }
+            Files.copy(file.getInputStream(), path.resolve(filename), StandardCopyOption.REPLACE_EXISTING);
+            task.setFileName(filename);
+            taskRepo.save(task);
+            return new TaskResponse(task);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }

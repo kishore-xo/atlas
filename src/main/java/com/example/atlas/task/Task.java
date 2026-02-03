@@ -30,12 +30,13 @@ public class Task {
     @Column(columnDefinition = "TEXT", nullable = false)
     private String description;
 
+    private String fileName;
+
     @Enumerated(EnumType.STRING)
     private TaskStatus status;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "workspace_id")
-
     private Workspace workspace;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "task")
