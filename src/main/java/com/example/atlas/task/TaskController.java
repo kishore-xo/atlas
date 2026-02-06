@@ -17,18 +17,19 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
+@RequestMapping("/api/v1")
 public class TaskController {
 
     private final TaskService taskService;
 
-    @RequestMapping(path = "workspaces/{workspaceId}/tasks", method = RequestMethod.GET)
+    @RequestMapping(path = "/workspaces/{workspaceId}/tasks", method = RequestMethod.GET)
     public ResponseEntity<List<TaskResponse>> getTasks(@PathVariable Long workspaceId, @PageableDefault(size = 5, direction = Sort.Direction.ASC, sort = "id") Pageable pageable) {
         return new ResponseEntity<>(taskService.getTasks(workspaceId, pageable), HttpStatus.OK);
     }
 
 
     @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
-    @RequestMapping(path = "workspaces/{workspaceId}/tasks", method = RequestMethod.POST)
+    @RequestMapping(path = "/workspaces/{workspaceId}/tasks", method = RequestMethod.POST)
     public ResponseEntity<TaskResponse> createTask(@PathVariable Long workspaceId, @Valid @RequestBody TaskRequest taskRequest) {
         return new ResponseEntity<>(taskService.createTask(workspaceId, taskRequest), HttpStatus.CREATED);
     }

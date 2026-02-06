@@ -14,7 +14,7 @@ import java.security.Principal;
 import java.util.List;
 
 @RestController
-@RequestMapping("/workspaces")
+@RequestMapping("/api/v1/workspaces")
 @RequiredArgsConstructor
 public class WorkSpaceController {
 

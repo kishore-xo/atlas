@@ -11,7 +11,7 @@ import java.security.Principal;
 import java.util.List;
 
 @RestController
-@RequestMapping("/workspaces/{workspaceId}/members")
+@RequestMapping("/api/v1/workspaces/{workspaceId}/members")
 @RequiredArgsConstructor
 public class WorkspaceMemberController {
 

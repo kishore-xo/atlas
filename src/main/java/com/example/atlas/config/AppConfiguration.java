@@ -43,7 +43,7 @@ public class AppConfiguration {
                 .cors(Customizer.withDefaults())
                 .authorizeHttpRequests(
                         auth ->
-                                auth.requestMatchers("/auth/**", "/swagger-ui/**",
+                                auth.requestMatchers("/api/v1/auth/**", "/swagger-ui/**",
                                                 "/swagger-ui/index.html", "/v3/api-docs/**",
                                                 "/ws/**").permitAll()
                                         .anyRequest().authenticated()

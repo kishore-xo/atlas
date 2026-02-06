@@ -16,16 +16,17 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
+@RequestMapping("/api/v1")
 public class CommentsController {
 
     private final CommentsService commentsService;
 
-    @RequestMapping(path = "tasks/{taskId}/comments",method = RequestMethod.GET)
+    @RequestMapping(path = "/tasks/{taskId}/comments",method = RequestMethod.GET)
     public ResponseEntity<List<CommentsResponse>> getComments(@PathVariable(name = "taskId") Long id, @PageableDefault(size = 5, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable){
         return new ResponseEntity<>(commentsService.getComments(id, pageable), HttpStatus.OK);
     }
 
-    @RequestMapping(path = "tasks/{taskId}/comments",method = RequestMethod.POST)
+    @RequestMapping(path = "/tasks/{taskId}/comments",method = RequestMethod.POST)
     public ResponseEntity<CommentsResponse> createComment(@PathVariable(name = "taskId") Long id, @Valid @RequestBody CommentsRequest commentsRequest, Principal principal){
         return new ResponseEntity<>(commentsService.createComment(id,commentsRequest,principal.getName()),HttpStatus.CREATED);
     }
