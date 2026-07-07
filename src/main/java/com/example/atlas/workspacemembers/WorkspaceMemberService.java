@@ -50,7 +50,7 @@ public class WorkspaceMemberService {
         }
 
         Users newUser = userRepo.findUsersByEmail(request.email())
-                .orElseThrow(() -> new NotFoundException("User to add not found"));
+                .orElseThrow(() -> new NotFoundException("User not found"));
 
         if (memberRepo.existsByWorkspaceIdAndUsersId(workspaceId, newUser.getId())) {
             throw new BadRequestException("User is already a member of this workspace");
